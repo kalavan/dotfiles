@@ -151,3 +151,7 @@ bind ^] paste [.]
 # defnonblock 1
 # blankerprg rain -d 100
 # idle 30 blanker
+
+term xterm
+terminfo xterm
+hardstatus alwayslastline "%{b kw}%H %{r}%1` %{w}| %{g}%c %{w}| %{y}%d.%m.%Y %{w}| %{g}%l %{w}| %{-b kw}%u %-Lw%{= rW}%50> %n%f %t %{-}%+Lw%<"
