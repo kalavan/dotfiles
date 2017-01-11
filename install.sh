@@ -1,6 +1,7 @@
 #!/bin/bash
 
 DOTFILE_DIR=`dirname $0`
+CUR_DIR=`pwd`
 
 log() {
 	NEW_LINE=${2:-1}
@@ -49,5 +50,10 @@ link_vim() {
 	log "Vim section done"
 }
 
-link_zsh
+log "Getting submodules"
+cd $DOTFILE_DIR
+git submodule update --init --recursive
+cd $CUR_DIR
 
+link_zsh
+link_vim
