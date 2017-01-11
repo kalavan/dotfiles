@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DOTFILE_DIR=`dirname $0`
+DOTFILE_DIR=$(cd $(dirname $0) && pwd)
 CUR_DIR=`pwd`
 
 log() {
@@ -14,11 +14,11 @@ log() {
 }
 
 remove_and_link() {
-	TARGET="${DOTFILE_DIR}/$1"
+	SOURCE="${DOTFILE_DIR}/$1"
 	DESTINATION=$2
 	FORCE=${3:-0}
 
-	log "Trying to link $TARGET to $DESTINATION"
+	log "Trying to link $SOURCE to $DESTINATION"
 	if [ -e "$DESTINATION" -o -L "$DESTINATION" ]; then
 		log "$DESTINATION already exists"
 		if [ $FORCE -eq 1 ]; then
@@ -30,8 +30,8 @@ remove_and_link() {
 		fi
 	fi
 
-	log "Linking $TARGET -> $DESTINATION" 0
-	ln -s "$TARGET" "$DESTINATION"
+	log "Linking $SOURCE -> $DESTINATION" 0
+	ln -s "$SOURCE" "$DESTINATION"
 }
 
 link_zsh() {
