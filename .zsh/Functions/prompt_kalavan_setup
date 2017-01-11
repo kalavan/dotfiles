@@ -1,0 +1,185 @@
+#!/bin/zsh
+
+prompt_kalavan_help() {
+	cat << EOF
+prompt_kalavan_setup prompt_color user_color root_color host_color dash_color1 dash_color2 pwd_color pr_textcolor
+	prompt_color- color of a text you write
+	user_color  - username color
+	root_color  - username when root
+	host_color  - default host color
+	dash_color1 - color of frame
+	dash_color2 - color of other frame parts "()"
+	pwd_color   - color in which PWD will be displayed
+	pr_textcolor- color of text in first line of prompt
+	host_warn   - warning color that you are not on your host
+	host_crit   - color for critical hosts
+	host_regexp - regular expressions to change host colors given as an array 1-warn, 2-crit
+
+Also there is one behaviour encoded in prompt - it will change color of hostname for some patterns.
+EOF
+}
+
+function prompt_kalavan_precmd {
+    local exitstatus=$?
+	local prompt_size
+	local prompt_head
+	local PR_PWDLEN=""
+
+	local PR_ES="${PR_DASH_COLOR1}"
+	if [[ exitstatus -eq 0 ]]; then
+			PR_ES=${PR_ES}"(${exitstatus})"
+	else
+			PR_ES=${PR_ES}"${PR_LIGHT_RED}(${exitstatus})"
+	fi
+
+	PR_ES=$PR_ES"${PR_DASH_COLOR1}"
+	
+	
+	prompt_size=${#${(e%)${prompt_head1//\%\{[^\}]#%\}/}}}
+	local pwdsize=${#${(%):-%~}}
+	if [[ "$prompt_size + $pwdsize + 5" -ge $COLUMNS ]]; then
+			((PR_PWDLEN=$COLUMNS - $prompt_size -5))
+	fi
+
+	prompt_head=$prompt_head1"%${PR_PWDLEN}<...<%~%<<${PR_DASH_COLOR2})${PR_DASH_COLOR1}${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_HBAR}${PR_HBAR}${PR_ALTCHARS_OFF}"
+
+#start ${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_HBAR}${PR_ALTCHARS_OFF}${PR_DASH_COLOR2}   
+
+	prompt_size=${#${(e%)${prompt_head//\%\{[^\}]#%\}/}}}
+
+	PH_FILLBAR="\${(l:(($COLUMNS - $prompt_size -2))::${PR_HBAR}:)}"
+	
+	PS1="${prompt_head}${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${(e)PH_FILLBAR}${PR_URCORNER}${PR_ALTCHARS_OFF}\
+${vcs_info_msg_0_}\
+
+${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_LLCORNER}${PR_ALTCHARS_OFF}${PR_ES}%(!.$PR_LIGHT_RED.$PR_LIGHT_GREEN)%#${PR_COLOR_RESET} "
+}
+
+function prompt_kalavan_setup {
+	setopt prompt_subst
+	autoload colors zsh/terminfo
+
+	autoload -Uz vcs_info
+#	zstyle ':vcs_info:*' enable git svn cvs   
+#	^^ This should be set in zshrc, to control which vcs should be enabled
+	autoload -Uz add-zsh-hook
+	
+
+    if [[ "$terminfo[colors]" -ge 8 ]]; then
+		colors
+    fi
+    for color in RED GREEN YELLOW BLUE MAGENTA CYAN WHITE; do
+#		eval PR_$color='%{$terminfo[bold]$fg[${(L)color}]%}'
+		eval PR_LIGHT_$color='%{$fg[${(L)color}]%}'
+		(( count = $count + 1 ))
+    done
+    PR_NO_COLOUR="%{$terminfo[sgr0]%}"
+
+	PR_PROMPT_COLOR="%{$fg[${1:-grey}]%}"
+	PR_USER_COLOR="%{$fg_bold[${2:-green}]%}"
+	PR_ROOT_COLOR="%{$fg_bold[${3:-red}]%}"
+	PR_HOST_COLOR="%{$fg_bold[${4:-green}]%}"
+	PR_DASH_COLOR1="%{$fg_no_bold[${5:-cyan}]%}"
+	PR_DASH_COLOR2="%{$fg[${6:-magenta}]%}"
+	PR_PWD_COLOR="%{$fg[${7:-green}]%}"
+	PR_TEXT_COLOR="%{$fg[${8:-magenta}]%}"
+	PR_COLOR_RESET="%{$reset_color%}"
+	local PR_WARN_HOST_COLOR="%{$fg_bold[${9:-yellow}]%}"
+	local PR_CRIT_HOST_COLOR="%{$fg_bold[${10:-red}]%}"
+	if [ -z "$11" ]; then 
+			PR_HOST_REGEXP=('(^ted|^dus|^mylo|axit.pl$)' '^(fra|tef)')
+	else
+			PR_HOST_REGEXP=${(z)11}
+	fi
+
+    ###
+    # See if we can use extended characters to look nicer.
+    
+    typeset -A altchar
+    set -A altchar ${(s..)terminfo[acsc]}
+    PR_SET_CHARSET="%{$terminfo[enacs]%}"
+    PR_ALTCHARS_ON="%{$terminfo[smacs]%}"
+    PR_ALTCHARS_OFF="%{$terminfo[rmacs]%}"
+    PR_HBAR=${altchar[q]:--}
+    PR_ULCORNER=${altchar[l]:--}
+    PR_LLCORNER=${altchar[m]:--}
+    PR_LRCORNER=${altchar[j]:--}
+    PR_URCORNER=${altchar[k]:--}
+	PR_LTRIANGLE=${altchar[t]:--}
+	PR_END=${altchar[\`]:--}
+
+	#determine host color
+	local h_name=$(hostname -f)
+
+	local tmp=${PR_HOST_REGEXP[1]}
+	if [[ -n "$tmp" ]]; then
+		if [[ $HOST =~ $tmp ]]; then
+				PR_HOST_COLOR=$PR_WARN_HOST_COLOR
+		fi
+	fi
+
+	local tmp=${PR_HOST_REGEXP[2]}
+	if [[ -n "$tmp" ]]; then
+		if [[ $HOST =~ $tmp ]]; then
+				PR_HOST_COLOR=$PR_CRIT_HOST_COLOR
+		fi
+	fi
+
+	prompt_user_at_host="%*${PR_DASH_COLOR2}${PR_ALTCHARS_OFF}(%(!.${PR_ROOT_COLOR}%{%U%}%n%{%u%}${PR_COLOR_RESET}.${PR_USER_COLOR}%n${PR_COLOR_RESET})${PR_LIGHT_WHITE}@${PR_HOST_COLOR}%m${PR_COLOR_RESET}${PR_DASH_COLOR2})"
+	prompt_history="${PR_TEXT_COLOR}H${PR_DASH_COLOR2}(${PR_TEXT_COLOR}%!${PR_DASH_COLOR2})"
+	prompt_job_number="${PR_DASH_COLOR2}%(1j.${PR_TEXT_COLOR}J${PR_DASH_COLOR2}(${PR_TEXT_COLOR}%j${PR_DASH_COLOR2}).)"
+	prompt_pwd=""
+
+	prompt_head1="${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_ULCORNER}\
+${prompt_user_at_host}\
+${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_HBAR}${PR_ALTCHARS_OFF}\
+${prompt_history}\
+${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_HBAR}${PR_ALTCHARS_OFF}\
+${prompt_job_number}\
+${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_HBAR}${PR_HBAR}${PR_ALTCHARS_OFF}\
+${PR_DASH_COLOR2}(${PR_PWD_COLOR}"
+
+	# Let's try to get some VCS info into prompt		
+	# Let's take a look on git first
+	zstyle ':vcs_info:git:*' check-for-changes true
+	zstyle ':vcs_info:git:*' get-revision true
+	zstyle ':vcs_info:git:*' stagedstr "S"
+	zstyle ':vcs_info:git:*' unstagedstr "Repo changed"
+	zstyle ':vcs_info:git:*' formats "
+${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_LTRIANGLE=}${PR_ALTCHARS_OFF}\
+${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_HBAR}${PR_ALTCHARS_OFF}${PR_TEXT_COLOR=}REPO${PR_DASH_COLOR2}(${PR_TEXT_COLOR}%s:%r${PR_DASH_COLOR2})\
+${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_HBAR}${PR_HBAR}${PR_ALTCHARS_OFF}\
+${PR_DASH_COLOR2}[${PR_DASH_COLOR1}%u%c${PR_DASH_COLOR2}]"
+
+	zstyle ':vcs_info:git:*' actionformats "
+${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_LTRIANGLE=}${PR_ALTCHARS_OFF}\
+${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_HBAR}${PR_ALTCHARS_OFF}${PR_TEXT_COLOR=}REPO${PR_DASH_COLOR2}(${PR_TEXT_COLOR}%s:%r${PR_DASH_COLOR2})\
+${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_HBAR}${PR_HBAR}${PR_ALTCHARS_OFF}\
+${PR_DASH_COLOR2}[${PR_DASH_COLOR1}${PR_TEXT_COLOR}%u%c${PR_DASH_COLOR2}]\
+${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_HBAR}${PR_HBAR}${PR_ALTCHARS_OFF}\
+${PR_DASH_COLOR2}[${PR_TEXT_COLOR}%a${PR_DASH_COLOR2}]"
+
+	#For rest of vcs'
+	zstyle ':vcs_info:*' check-for-changes true
+	zstyle ':vcs_info:*' get-revision true
+	zstyle ':vcs_info:*' formats "
+${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_LTRIANGLE=}${PR_ALTCHARS_OFF}\
+${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_HBAR}${PR_ALTCHARS_OFF}${PR_TEXT_COLOR=}REPO${PR_DASH_COLOR2}(${PR_TEXT_COLOR}%s:%r${PR_DASH_COLOR2})\
+${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_HBAR}${PR_HBAR}${PR_ALTCHARS_OFF}\
+${PR_DASH_COLOR2}[${PR_TEXT_COLOR}%b${PR_DASH_COLOR2}]"
+
+	zstyle ':vcs_info:*' actionformats "
+${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_LTRIANGLE=}${PR_ALTCHARS_OFF}\
+${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_HBAR}${PR_ALTCHARS_OFF}${PR_TEXT_COLOR=}REPO${PR_DASH_COLOR2}(${PR_TEXT_COLOR}%s:%r${PR_DASH_COLOR2})\
+${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_HBAR}${PR_HBAR}${PR_ALTCHARS_OFF}\
+${PR_DASH_COLOR2}[${PR_TEXT_COLOR}%b${PR_DASH_COLOR2}]\
+${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_HBAR}${PR_HBAR}${PR_ALTCHARS_OFF}\
+${PR_DASH_COLOR2}[${PR_TEXT_COLOR}%a${PR_DASH_COLOR2}]"
+				
+	add-zsh-hook precmd vcs_info
+	add-zsh-hook precmd prompt_kalavan_precmd
+}
+
+prompt_kalavan_setup "$@"
+
+# vim: ts=4
