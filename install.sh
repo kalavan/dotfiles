@@ -54,6 +54,8 @@ log "Getting submodules"
 cd $DOTFILE_DIR
 git submodule update --init --recursive
 cd $CUR_DIR
+log "Done updating submodules"
+log ""
 
 link_zsh
 link_vim
