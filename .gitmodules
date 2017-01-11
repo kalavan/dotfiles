@@ -1,0 +1,9 @@
+[submodule "vim/bundle/ansible-vim"]
+	path = vim/bundle/ansible-vim
+	url = https://github.com/pearofducks/ansible-vim
+[submodule "vim/bundle/python-mode"]
+	path = vim/bundle/python-mode
+	url = git://github.com/klen/python-mode.git
+[submodule "vim/bundle/vim-wakatime"]
+	path = vim/bundle/vim-wakatime
+	url = git://github.com/wakatime/vim-wakatime.git

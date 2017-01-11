@@ -1,0 +1,2 @@
+xmledit-1.9.1.vba: call delete('/home/kalavan/.vim/ftplugin/xml.vim')|call delete('/home/kalavan/.vim/doc/xml-plugin.txt')
+csv-0.31.vmb: call delete('/home/kalavan/.vim/ftplugin/csv.vim')|call delete('/home/kalavan/.vim/doc/ft-csv.txt')|call delete('/home/kalavan/.vim/syntax/csv.vim')|call delete('/home/kalavan/.vim/ftdetect/csv.vim')|call delete('/home/kalavan/.vim/plugin/csv.vim')
