@@ -39,7 +39,7 @@ link_zsh() {
 	remove_and_link "zsh" "$HOME"/.zsh 1
 	remove_and_link "zsh.d" "$HOME"/.zsh.d 1
 	remove_and_link "zshrc" "$HOME"/.zshrc 1
-	log "Zsh section done"
+	log "Zsh section done."
 	log ""
 }
 
@@ -47,7 +47,13 @@ link_vim() {
 	log "Linking vim"
 	remove_and_link "vim" "$HOME/.vim" 1
 	remove_and_link "vimrc" "$HOME/.vimrc" 1
-	log "Vim section done"
+	log "Vim section done."
+}
+
+link_screen() {
+	log "Linking screenrc"
+	remove_and_link "screenrc" "$HOME/.screenrc" 1
+	log "Screen section done."
 }
 
 log "Getting submodules"
