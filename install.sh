@@ -48,12 +48,14 @@ link_vim() {
 	remove_and_link "vim" "$HOME/.vim" 1
 	remove_and_link "vimrc" "$HOME/.vimrc" 1
 	log "Vim section done."
+	log ""
 }
 
 link_screen() {
 	log "Linking screenrc"
 	remove_and_link "screenrc" "$HOME/.screenrc" 1
 	log "Screen section done."
+	log ""
 }
 
 log "Getting submodules"
@@ -65,3 +67,4 @@ log ""
 
 link_zsh
 link_vim
+link_screen
