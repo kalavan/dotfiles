@@ -143,13 +143,16 @@ ${PR_DASH_COLOR2}(${PR_PWD_COLOR}"
 	# Let's take a look on git first
 	zstyle ':vcs_info:git:*' check-for-changes true
 	zstyle ':vcs_info:git:*' get-revision true
-	zstyle ':vcs_info:git:*' stagedstr "S"
-	zstyle ':vcs_info:git:*' unstagedstr "Repo changed"
+	zstyle ':vcs_info:git:*' stagedstr "●"
+	zstyle ':vcs_info:git:*' unstagedstr "●"
+	#zstyle ':vcs_info:git:*' unstagedstr "Repo changed"
 	zstyle ':vcs_info:git:*' formats "
 ${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_LTRIANGLE=}${PR_ALTCHARS_OFF}\
-${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_HBAR}${PR_ALTCHARS_OFF}${PR_TEXT_COLOR=}REPO${PR_DASH_COLOR2}(${PR_TEXT_COLOR}%s:%r${PR_DASH_COLOR2})\
+${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_HBAR}${PR_ALTCHARS_OFF}${PR_TEXT_COLOR=}REPO${PR_DASH_COLOR2}(${PR_TEXT_COLOR}%s${PR_DASH_COLOR1}:${PR_TEXT_COLOR}%r${PR_DASH_COLOR1}@${PR_TEXT_COLOR}%b${PR_DASH_COLOR2})\
 ${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_HBAR}${PR_HBAR}${PR_ALTCHARS_OFF}\
-${PR_DASH_COLOR2}[${PR_DASH_COLOR1}%u%c${PR_DASH_COLOR2}]"
+${PR_DASH_COLOR2}Unstagged(${PR_DASH_COLOR1}%u${PR_DASH_COLOR2})${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_HBAR}${PR_HBAR}${PR_ALTCHARS_OFF}${PR_DASH_COLOR2}Stagged(${PR_DASH_COLOR1}%c${PR_DASH_COLOR2})"
+
+# ${PR_DASH_COLOR2}[${PR_DASH_COLOR1}%u%c${PR_DASH_COLOR2}]"
 
 	zstyle ':vcs_info:git:*' actionformats "
 ${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_LTRIANGLE=}${PR_ALTCHARS_OFF}\
