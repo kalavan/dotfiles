@@ -32,6 +32,8 @@ function prompt_kalavan_precmd {
 			PR_ES=${PR_ES}"${PR_LIGHT_RED}(${exitstatus})"
 	fi
 
+	kube_context=$(kubectl config current-context)
+
 	PR_ES=$PR_ES"${PR_DASH_COLOR1}"
 	
 	
@@ -41,7 +43,7 @@ function prompt_kalavan_precmd {
 			((PR_PWDLEN=$COLUMNS - $prompt_size -5))
 	fi
 
-	prompt_head=$prompt_head1"%${PR_PWDLEN}<...<%~%<<${PR_DASH_COLOR2})${PR_DASH_COLOR1}${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_HBAR}${PR_HBAR}${PR_ALTCHARS_OFF}"
+	prompt_head=$prompt_head1$prompt_head2$kube_context$prompt_head4$prompt_head5"%${PR_PWDLEN}<...<%~%<<${PR_DASH_COLOR2})${PR_DASH_COLOR1}${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_HBAR}${PR_HBAR}${PR_ALTCHARS_OFF}"
 
 #start ${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_HBAR}${PR_ALTCHARS_OFF}${PR_DASH_COLOR2}   
 
@@ -87,7 +89,7 @@ function prompt_kalavan_setup {
 	local PR_WARN_HOST_COLOR="%{$fg_bold[${9:-yellow}]%}"
 	local PR_CRIT_HOST_COLOR="%{$fg_bold[${10:-red}]%}"
 	if [ -z "$11" ]; then 
-			PR_HOST_REGEXP=('(^ted|^dus|^mylo|axit.pl$)' '^(fra|tef)')
+			PR_HOST_REGEXP=('(^k8s-agent|JumpServer|axit.pl$)' '^(fra|tef)')
 	else
 			PR_HOST_REGEXP=${(z)11}
 	fi
@@ -108,8 +110,8 @@ function prompt_kalavan_setup {
 	PR_LTRIANGLE=${altchar[t]:--}
 	PR_END=${altchar[\`]:--}
 
+	kube_context=$(kubectl config current-context)
 	#determine host color
-	local h_name=$(hostname -f)
 
 	local tmp=${PR_HOST_REGEXP[1]}
 	if [[ -n "$tmp" ]]; then
@@ -128,6 +130,8 @@ function prompt_kalavan_setup {
 	prompt_user_at_host="%*${PR_DASH_COLOR2}${PR_ALTCHARS_OFF}(%(!.${PR_ROOT_COLOR}%{%U%}%n%{%u%}${PR_COLOR_RESET}.${PR_USER_COLOR}%n${PR_COLOR_RESET})${PR_LIGHT_WHITE}@${PR_HOST_COLOR}%m${PR_COLOR_RESET}${PR_DASH_COLOR2})"
 	prompt_history="${PR_TEXT_COLOR}H${PR_DASH_COLOR2}(${PR_TEXT_COLOR}%!${PR_DASH_COLOR2})"
 	prompt_job_number="${PR_DASH_COLOR2}%(1j.${PR_TEXT_COLOR}J${PR_DASH_COLOR2}(${PR_TEXT_COLOR}%j${PR_DASH_COLOR2}).)"
+	prompt_kube_context1="${PR_TEXT_COLOR}Kube${PR_DASH_COLOR2}(${PR_TEXT_COLOR}"
+	prompt_kube_context2="${PR_DASH_COLOR2})"
 	prompt_pwd=""
 
 	prompt_head1="${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_ULCORNER}\
@@ -136,15 +140,18 @@ ${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_HBAR}${PR_ALTCHARS_OFF}\
 ${prompt_history}\
 ${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_HBAR}${PR_ALTCHARS_OFF}\
 ${prompt_job_number}\
-${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_HBAR}${PR_HBAR}${PR_ALTCHARS_OFF}\
+${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_HBAR}${PR_ALTCHARS_OFF}"
+	prompt_head2="${prompt_kube_context1}"
+	prompt_head4=${prompt_kube_context2}
+	prompt_head5="${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_HBAR}${PR_HBAR}${PR_ALTCHARS_OFF}\
 ${PR_DASH_COLOR2}(${PR_PWD_COLOR}"
 
 	# Let's try to get some VCS info into prompt		
 	# Let's take a look on git first
 	zstyle ':vcs_info:git:*' check-for-changes true
 	zstyle ':vcs_info:git:*' get-revision true
-	zstyle ':vcs_info:git:*' stagedstr "●"
-	zstyle ':vcs_info:git:*' unstagedstr "●"
+	zstyle ':vcs_info:git:*' stagedstr "S"
+	zstyle ':vcs_info:git:*' unstagedstr "U"
 	zstyle ':vcs_info:git:*' formats "
 ${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_LTRIANGLE=}${PR_ALTCHARS_OFF}\
 ${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_HBAR}${PR_ALTCHARS_OFF}${PR_TEXT_COLOR=}REPO${PR_DASH_COLOR2}(${PR_TEXT_COLOR}%s${PR_DASH_COLOR1}:${PR_TEXT_COLOR}%r${PR_DASH_COLOR1}@${PR_TEXT_COLOR}%b${PR_DASH_COLOR2})\
