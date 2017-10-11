@@ -37,7 +37,8 @@ function prompt_kalavan_precmd {
 	PR_ES=$PR_ES"${PR_DASH_COLOR1}"
 	
 	
-	prompt_size=${#${(e%)${prompt_head1//\%\{[^\}]#%\}/}}}
+#	prompt_size=${#${(e%)${prompt_head1//\%\{[^\}]#%\}/}}}
+	prompt_size=$(( ${#${(e%)${prompt_head1//\%\{[^\}]#%\}/}}} + ${#${(e%)${prompt_head2//\%\{[^\}]#%\}/}}} + ${#${(e%)${prompt_head4//\%\{[^\}]#%\}/}}} + ${#${(e%)${prompt_head5//\%\{[^\}]#%\}/}}} + ${#${(e%)${kube_context//\%\{[^\}]#%\}/}}}))
 	local pwdsize=${#${(%):-%~}}
 	if [[ "$prompt_size + $pwdsize + 5" -ge $COLUMNS ]]; then
 			((PR_PWDLEN=$COLUMNS - $prompt_size -5))
@@ -56,6 +57,7 @@ ${vcs_info_msg_0_}\
 
 ${PR_DASH_COLOR1}${PR_ALTCHARS_ON}${PR_LLCORNER}${PR_ALTCHARS_OFF}${PR_ES}%(!.$PR_LIGHT_RED.$PR_LIGHT_GREEN)%#${PR_COLOR_RESET} "
 }
+
 
 function prompt_kalavan_setup {
 	setopt prompt_subst
