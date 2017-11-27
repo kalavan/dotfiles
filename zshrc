@@ -287,4 +287,6 @@ PS1="[%(!.%{$fg[red]%}%U%B%n%b%u.%n)%{$reset_color%}@%m%(1j.%{$fg[magenta]%} J:%
 autoload -U promptinit && promptinit && prompt kalavan
 add-zsh-hook precmd history_hook
 
+source <(kubectl completion zsh)
+
 #vim: 
