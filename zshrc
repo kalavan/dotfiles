@@ -48,6 +48,10 @@ check_rrd_length(){
 	/bin/egrep -h "host_name|service_description" $* | awk '/host_name/{h=$2} /service_description/{print h"_"$2}' | while read l; do echo -en "$l "; echo $l | wc -c; done | sort -k2n
 }
 
+urlencode(){
+	python2 -c "import urllib; print urllib.quote('''$1''')"
+}
+
 upload_ssh_key(){
 	#1 - server
 	#2 - user
