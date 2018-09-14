@@ -28,6 +28,12 @@ alias sdel_zero='echo "find -type f -size 0 -exec rm -vf -- \"{}\" \;"'
 alias ssh='ssh -o ServerAliveInterval=120'
 alias t='type -a'
 alias f3='ssh f3@nblack2'
+alias az-acc='az account show -o table'
+alias az-int='az account set --subscription Device-Communication-Integration; az-acc'
+alias az-stg='az account set --subscription Device-Communication-Staging; az-acc'
+alias az-preprod='az account set --subscription Device-Communication-PreProd; az-acc'
+alias az-prod='az account set --subscription Device-Communication-Prod; az-acc'
+alias az-lt='az account set --subscription Device-Communication-Load-Test-Framework; az-acc'
 alias check_hostmapping='/home/kalavan/CVS/admin/scripts/host-mapping/host-mapping-verifier.py /home/kalavan/CVS/admin/axit.pl/host-mapping.csv'
 rem_ssh_key(){ sed -ie "$1d"  ~/.ssh/known_hosts ;}
 upload_dns(){
@@ -292,5 +298,8 @@ autoload -U promptinit && promptinit && prompt kalavan
 add-zsh-hook precmd history_hook
 
 source <(kubectl completion zsh)
+if [ -f /home/kalavan/azure/az.completion ]; then
+	source /home/kalavan/azure/az.completion
+fi
 
 #vim: 
