@@ -85,7 +85,7 @@ fpath=(~/.zsh/Functions $fpath)
 export CVSROOT=":pserver:kalavan@cvs.axit.pl:2401/cvs/cvs"
 export EDITOR=vim
 # export GREP_OPTIONS='--color=auto'
-export PATH=$PATH:/home/kalavan/.bin
+export PATH=$PATH:/home/kalavan/bin
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket" 
 
 #zstyle ':completion:*' completer _list _expand _complete _ignored _approximate
