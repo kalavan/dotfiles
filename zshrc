@@ -35,6 +35,7 @@ alias az-stg='az account set --subscription Device-Communication-Staging; az-acc
 alias az-preprod='az account set --subscription Device-Communication-PreProd; az-acc'
 alias az-prod='az account set --subscription Device-Communication-Prod; az-acc'
 alias az-devops='az account set --subscription VI-DevOps; az-acc'
+alias az-shared='az account set --subscription Device-Communication-Shared; az-acc'
 alias az-lt='az account set --subscription Device-Communication-Load-Test-Framework; az-acc'
 alias check_hostmapping='/home/kalavan/CVS/admin/scripts/host-mapping/host-mapping-verifier.py /home/kalavan/CVS/admin/axit.pl/host-mapping.csv'
 rem_ssh_key(){ sed -ie "$1d"  ~/.ssh/known_hosts ;}
@@ -96,8 +97,8 @@ fpath=(~/.zsh/Functions $fpath)
 ### EXPORTS ###
 export CVSROOT=":pserver:kalavan@cvs.axit.pl:2401/cvs/cvs"
 export EDITOR=vim
-# export GREP_OPTIONS='--color=auto'
-export PATH=$PATH:/home/kalavan/bin
+export NPM_PACKAGES="${HOME}/.npm-packages"
+export PATH=$PATH:/home/kalavan/bin:/home/kalavan/.local/bin:$NPM_PACKAGES/bin
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket" 
 
 #zstyle ':completion:*' completer _list _expand _complete _ignored _approximate
@@ -305,3 +306,6 @@ if [ -f /home/kalavan/azure/az.completion ]; then
 fi
 
 #vim: 
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /usr/bin/terraform terraform
