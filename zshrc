@@ -82,6 +82,8 @@ EOF
 fpath=(~/.zsh/Functions $fpath)
 
 ### EXPORTS ###
+#export LIBVA_DRIVER_NAME="vdpau"
+#export VDPAU_DRIVER="nvidia"
 export CVSROOT=":pserver:kalavan@cvs.axit.pl:2401/cvs/cvs"
 export EDITOR=vim
 # export GREP_OPTIONS='--color=auto'
@@ -287,6 +289,11 @@ PS1="[%(!.%{$fg[red]%}%U%B%n%b%u.%n)%{$reset_color%}@%m%(1j.%{$fg[magenta]%} J:%
 autoload -U promptinit && promptinit && prompt kalavan
 add-zsh-hook precmd history_hook
 
+autoload -U +X bashcompinit && bashcompinit
+
+source ~/lib/azure-cli/az.completion
 source <(kubectl completion zsh)
+complete -C '/home/kalavan/bin/aws_completer' aws
+#eval "$(register python-argcomplete az)"
 
 #vim: 
