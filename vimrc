@@ -155,3 +155,19 @@ nmap <leader>/ <Esc>:Ack!
 """"""""""""" XMLEDIT FTPLUGIN """""""""""""""""""""""""""""""""""""""""""""""""
 let xml_use_xhtml = 1
 let xml_tag_syntax_prefixes = 'html\|xml\|xsl\|docbk\|twiki'
+
+""""""""""""" MARKDOWN PREVIEW """""""""""""""""""""""""""""""""""""""""""""""""
+let vim_markdown_preview_github=1
+let vim_markdown_preview_toggle=2
+let vim_markdown_preview_temp_file=0
+""""""""""""" Vim-plug """""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
+if empty(glob(data_dir . '/autoload/plug.vim'))
+  silent execute '!curl -fLo '.data_dir.'/autoload/plug.vim --create-dirs  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
+call plug#begin('~/.vim/plugged')
+Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+call plug#end()
+
