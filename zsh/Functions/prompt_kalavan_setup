@@ -33,6 +33,7 @@ function prompt_kalavan_precmd {
 	fi
 
 	kube_context=$(kubectl config current-context)
+#	kube_context="NONE"
 
 	PR_ES=$PR_ES"${PR_DASH_COLOR1}"
 	
