@@ -28,6 +28,15 @@ alias sdel_zero='echo "find -type f -size 0 -exec rm -vf -- \"{}\" \;"'
 alias ssh='ssh -o ServerAliveInterval=120'
 alias t='type -a'
 alias f3='ssh f3@nblack2'
+alias az-acc='az account show -o table'
+alias az-dev='az account set --subscription Device-Communication-Development; az-acc'
+alias az-int='az account set --subscription Device-Communication-Integration; az-acc'
+alias az-stg='az account set --subscription Device-Communication-Staging; az-acc'
+alias az-preprod='az account set --subscription Device-Communication-PreProd; az-acc'
+alias az-prod='az account set --subscription Device-Communication-Prod; az-acc'
+alias az-devops='az account set --subscription VI-DevOps; az-acc'
+alias az-shared='az account set --subscription Device-Communication-Shared; az-acc'
+alias az-lt='az account set --subscription Device-Communication-Load-Test-Framework; az-acc'
 alias check_hostmapping='/home/kalavan/CVS/admin/scripts/host-mapping/host-mapping-verifier.py /home/kalavan/CVS/admin/axit.pl/host-mapping.csv'
 rem_ssh_key(){ sed -ie "$1d"  ~/.ssh/known_hosts ;}
 upload_dns(){
@@ -46,6 +55,10 @@ upload_dns(){
 
 check_rrd_length(){
 	/bin/egrep -h "host_name|service_description" $* | awk '/host_name/{h=$2} /service_description/{print h"_"$2}' | while read l; do echo -en "$l "; echo $l | wc -c; done | sort -k2n
+}
+
+urlencode(){
+	python2 -c "import urllib; print urllib.quote('''$1''')"
 }
 
 upload_ssh_key(){
@@ -86,8 +99,8 @@ fpath=(~/.zsh/Functions $fpath)
 #export VDPAU_DRIVER="nvidia"
 export CVSROOT=":pserver:kalavan@cvs.axit.pl:2401/cvs/cvs"
 export EDITOR=vim
-# export GREP_OPTIONS='--color=auto'
-export PATH=$PATH:/home/kalavan/bin
+export NPM_PACKAGES="${HOME}/.npm-packages"
+export PATH=$PATH:/home/kalavan/bin:/home/kalavan/.local/bin:$NPM_PACKAGES/bin
 export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket" 
 
 #zstyle ':completion:*' completer _list _expand _complete _ignored _approximate
@@ -294,6 +307,12 @@ autoload -U +X bashcompinit && bashcompinit
 source ~/lib/azure-cli/az.completion
 source <(kubectl completion zsh)
 complete -C '/home/kalavan/bin/aws_completer' aws
-#eval "$(register python-argcomplete az)"
+
+if [ -f /home/kalavan/azure/az.completion ]; then
+	source /home/kalavan/azure/az.completion
+fi
 
 #vim: 
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /usr/bin/terraform terraform
